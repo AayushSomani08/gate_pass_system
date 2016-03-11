@@ -1,0 +1,18 @@
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipeContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/list"
+        android:name="vvv.gatepass.GatepassFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="LinearLayoutManager"
+        tools:context="vvv.gatepass.GatepassFragment"
+        tools:listitem="@layout/fragment_gatepass" />
+    <!--android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp" -->
+</android.support.v4.widget.SwipeRefreshLayout>
