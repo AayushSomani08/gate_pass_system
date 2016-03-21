@@ -3,6 +3,7 @@ package vvv.gatepass;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -14,6 +15,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -24,17 +26,21 @@ import android.widget.Toast;
 import vvv.gatepass.dummy.DummyContent;
 
 public class Container extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GatepassFragment.OnGatepassListFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GatepassFragment.OnGatepassListFragmentInteractionListener,
+                    FragmentUserProfile.OnFragmentInteractionListener, FragmentLocalGatepass.OnFragmentInteractionListener,
+                    FragmentOutStationGatepass.OnFragmentInteractionListener, FragmentNonReturnable.OnFragmentInteractionListener{
 
     private SessionManager session;
+    public String acc_type, acc_name;
+    String mUserType;
 
     MenuItem mPreviousMenuItem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_page);
-        String acc_type;
 
+        //Session Manager Check if user is logged in.
         session = new SessionManager(getApplicationContext());
         if (!session.isLoggedIn()) {
             logoutUser();
@@ -43,18 +49,20 @@ public class Container extends AppCompatActivity
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
-                acc_type = "ERROR";
+                acc_type = "Not Authorised";
+                acc_name = "Unknown";
             }
             else {
                 acc_type = extras.getString("ACC_TYPE");
+                acc_name = extras.getString("ACC_NAME");
+                mUserType = acc_type;
             }
-            GatepassFragment firstFragment = new GatepassFragment();
-//          firstFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentFragment, firstFragment).commit();
+            FragmentUserProfile firstFragment = new FragmentUserProfile();
+            getSupportFragmentManager().beginTransaction().add(R.id.contentFragment, firstFragment).commit();
         }
         else {
             acc_type = getIntent().getExtras().getString("ACC_TYPE");
+            acc_name = getIntent().getExtras().getString("ACC_NAME");
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,7 +72,7 @@ public class Container extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Add Local Fixed Gatepass here...", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -98,9 +106,13 @@ public class Container extends AppCompatActivity
 
         String [] menu_list;
         if (acc_type.equals("STUDENT")) {
-            menu_list = new String[] {  "User Profile", "Out Station Request", "Non returnable Gatepass",
-                                        "Check Gatepass Status", "Visitor's Gatepass", "Visitor's Gatepass Status"};
-
+            menu_list = new String[] {  "User Profile",
+                                        "Local Gatepass",
+                                        "Out Station Request",
+                                        "Non returnable Gatepass",
+                                        "Check Gatepass Status",
+                                        "Visitor's Gatepass",
+                                        "Visitor's Gatepass Status"};
             menu.add(R.id.group_menu, Menu.NONE, Menu.NONE, menu_list[0]).setIcon(R.drawable.ic_menu_camera);
             final SubMenu subMenu = menu.addSubMenu("Gatepass");
             for(int i = 1; i<menu_list.length;i++){
@@ -108,17 +120,17 @@ public class Container extends AppCompatActivity
             }
         }
         else if (acc_type.equals("WARDEN")) {
-            menu_list = new String[] {  "Respond to request", "View User", "Visitor request", "Defaulter's list", "Blacklist Students",
-                    "Generate Report", "Checkout report"};
+            menu_list = new String[] {  "Respond to request",
+                                        "View User",
+                                        "Visitor request",
+                                        "Defaulter's list",
+                                        "Blacklist Students",
+                                        "Generate Report",
+                                        "Checkout report"};
             for ( String aMenu_list: menu_list) {
                 menu.add(R.id.group_menu, Menu.NONE, Menu.NONE, aMenu_list).setIcon(R.drawable.ic_menu_camera);
             }
         }
-
-        /*
-        for ( String aMenu_list: menu_list) {
-            menu.add(R.id.group_menu, Menu.NONE, Menu.NONE, aMenu_list).setIcon(R.drawable.ic_menu_camera);
-        }*/
         menu.setGroupCheckable(R.id.group_menu, true, true);
     }
 
@@ -171,24 +183,77 @@ public class Container extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         if (mPreviousMenuItem != null) {
-                mPreviousMenuItem.setChecked(false);
+            mPreviousMenuItem.setChecked(false);
+            if (mPreviousMenuItem == item)
+                return true;
         }
         mPreviousMenuItem = item;
+        Fragment fragment = null;
+        Class fragmentClass = null;
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Fragment fragment = null;
-        Class fragmentClass;
-            fragmentClass = GatepassFragment.class;
 
-        try {
+        /** Add cases for student block
+         *  0 = UserProfile  // Exists
+         *  1 = LocalGatepass // Exists
+         *  2 = OutStationRequest //Exists
+         *  3 = NonReturnableGatepass //Exists
+         *  4 = GatepassFragment  //Modify
+         *  5 = Visitor's Gatepass
+         *  6 = Visitor's Gatepass Status
+         */
+        if (mUserType.equals("STUDENT")) {
+            switch (id) {
+                case R.id.user_profile:
+                    fragment = new FragmentUserProfile();
+                    //fragmentClass = FragmentUserProfile.class;
+                    break;
+                case R.id.local_gatepass:
+                    fragment = new FragmentLocalGatepass();
+                    //fragmentClass = FragmentLocalGatepass.class;
+                    break;
+                case R.id.out_stat:
+                    fragment = new FragmentOutStationGatepass();
+                    //fragmentClass = FragmentOutStationGatepass.class;
+                    break;
+                case R.id.non_ret:
+                    fragment = new FragmentNonReturnable();
+                    fragmentClass = FragmentNonReturnable.class;
+                    break;
+            }
+        } else {
+            /** Add cases for student block
+             *  0 = Respond to request
+             *  1 = View User
+             *  2 = Visitor request
+             *  3 = Defaulter's list
+             *  4 = Blacklist Students
+             *  5 = Generate Report
+             *  6 = Checkout report
+             *  Replace default with appropriate option
+             */
+            switch (id) {
+                default:
+                    //Change when made
+                    fragmentClass = FragmentUserProfile.class;
+                    break;
+            }
+        }
+
+        /*try {
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.contentFragment, fragment).commit();
-
+        */
+        if(fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.contentFragment, fragment).commit();
+        }
+        else{
+            Log.e("NOT FOUND", "Error in fragment loading...");
+        }
         // Highlight the selected item, update the title, and close the drawer
         item.setChecked(true);
         setTitle(item.getTitle());
@@ -206,5 +271,9 @@ public class Container extends AppCompatActivity
     @Override
     public void onGatepassListFragmentInteraction(DummyContent.DummyItem item) {
         Toast.makeText(this, item.toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    public void onFragmentInteraction(Uri uri) {
+        //Whatevs. Replace with your own fragment code.
     }
 }

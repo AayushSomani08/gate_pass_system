@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -76,7 +77,7 @@ public class LoginActivity extends Activity {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    //attemptLogin();
+                    attemptLogin();
                     return true;
                 }
                 return false;
@@ -87,17 +88,17 @@ public class LoginActivity extends Activity {
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                //attemptLogin();
-                String email = mEmailView.getText().toString();
+                attemptLogin();
+                /*String email = mEmailView.getText().toString();
                 password = mPasswordView.getText().toString();
-                new UserLoginTask().execute(email);
+                new UserLoginTask().execute(email);*/
             }
         });
         user_page_intent = new Intent(LoginActivity.this, Container.class);
     }
 
 
-    /*private void attemptLogin() {
+    private void attemptLogin() {
 
         mEmailView.setError(null);
         mPasswordView.setError(null);
@@ -125,7 +126,7 @@ public class LoginActivity extends Activity {
         } else {
             new UserLoginTask().execute(email);
         }
-    }*/
+    }
 
     //LOGIN TASK
     class UserLoginTask extends AsyncTask<String, String, JSONObject> {
