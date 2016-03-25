@@ -5,10 +5,10 @@ Gatepass system app is made using Java, as a easier way to access a certain univ
 
 Contributors:
 
-[vVv-AA](https://github.com/vVv-AA)
+[pradumnkumar](https://github.com/pradumnkumar) Our php, json, server guy.
 
-[CodeRedCorona](https://github.com/CodeRedCorona)
+[vVv-AA](https://github.com/vVv-AA) Hot head maintainer.
+
+[CodeRedCorona](https://github.com/CodeRedCorona) The sleepy guy.
 
 [eshanaswar](https://github.com/eshanaswar)
-
-[pradumnkumar](https://github.com/pradumnkumar)

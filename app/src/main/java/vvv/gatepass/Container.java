@@ -15,10 +15,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,43 +24,33 @@ import android.widget.Toast;
 import vvv.gatepass.dummy.DummyContent;
 
 public class Container extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GatepassFragment.OnGatepassListFragmentInteractionListener,
-                    FragmentUserProfile.OnFragmentInteractionListener, FragmentLocalGatepass.OnFragmentInteractionListener,
-                    FragmentOutStationGatepass.OnFragmentInteractionListener, FragmentNonReturnable.OnFragmentInteractionListener{
-
-    private SessionManager session;
-    public String acc_type, acc_name;
-    String mUserType;
+        implements NavigationView.OnNavigationItemSelectedListener, GatepassFragment.OnGatepassListFragmentInteractionListener, UserProfile.UserProfileInteractionListener, NonReturnableGatepass.NonReturnableInteractionListener, LocalGatepass.LocalGatepassInteractionListener, OutStationGatepass.OutStationGatepassInteractionListener {
 
     MenuItem mPreviousMenuItem;
+    String mUserType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_page);
-
-        //Session Manager Check if user is logged in.
-        session = new SessionManager(getApplicationContext());
-        if (!session.isLoggedIn()) {
-            logoutUser();
-        }
+        String acc_type;
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
-                acc_type = "Not Authorised";
-                acc_name = "Unknown";
+                acc_type = "ERROR";
             }
             else {
                 acc_type = extras.getString("ACC_TYPE");
-                acc_name = extras.getString("ACC_NAME");
                 mUserType = acc_type;
             }
-            FragmentUserProfile firstFragment = new FragmentUserProfile();
-            getSupportFragmentManager().beginTransaction().add(R.id.contentFragment, firstFragment).commit();
+            UserProfile mStartFragment = new UserProfile();
+//          firstFragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.contentFragment, mStartFragment).commit();
         }
         else {
             acc_type = getIntent().getExtras().getString("ACC_TYPE");
-            acc_name = getIntent().getExtras().getString("ACC_NAME");
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -72,7 +60,7 @@ public class Container extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Add Local Fixed Gatepass here...", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -93,45 +81,34 @@ public class Container extends AppCompatActivity
         email.setText("Email");
     }
 
-    private void logoutUser() {
-        session.setLogin(false);
-        Intent intent = new Intent(Container.this, LoginActivity.class);
-        startActivity(intent);
-    }
-
     private void expandNavigationView(String acc_type) {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         Menu menu = navigationView.getMenu();
         menu.clear();
-
         String [] menu_list;
         if (acc_type.equals("STUDENT")) {
-            menu_list = new String[] {  "User Profile",
-                                        "Local Gatepass",
-                                        "Out Station Request",
-                                        "Non returnable Gatepass",
-                                        "Check Gatepass Status",
-                                        "Visitor's Gatepass",
-                                        "Visitor's Gatepass Status"};
-            menu.add(R.id.group_menu, Menu.NONE, Menu.NONE, menu_list[0]).setIcon(R.drawable.ic_menu_camera);
-            final SubMenu subMenu = menu.addSubMenu("Gatepass");
-            for(int i = 1; i<menu_list.length;i++){
-                subMenu.add(R.id.group_menu, Menu.NONE, Menu.NONE, menu_list[i]).setIcon(R.drawable.ic_menu_camera);
+            menu_list = new String[] {  "User Profile", "Out Station Request", "Non returnable Gatepass",
+                                        "Check Gatepass Status", "Visitor's Gatepass", "Visitor's Gatepass Status"};
+
+            for (int i = 0, menu_listLength = menu_list.length; i < menu_listLength; i++) {
+                String aMenu_list = menu_list[i];
+                menu.add(R.id.group_menu, i, Menu.NONE, aMenu_list).setIcon(R.drawable.ic_menu_camera);
             }
         }
         else if (acc_type.equals("WARDEN")) {
-            menu_list = new String[] {  "Respond to request",
-                                        "View User",
-                                        "Visitor request",
-                                        "Defaulter's list",
-                                        "Blacklist Students",
-                                        "Generate Report",
-                                        "Checkout report"};
-            for ( String aMenu_list: menu_list) {
-                menu.add(R.id.group_menu, Menu.NONE, Menu.NONE, aMenu_list).setIcon(R.drawable.ic_menu_camera);
+            menu_list = new String[] {  "Respond to request", "View User", "Visitor request", "Defaulter's list", "Blacklist Students",
+                    "Generate Report", "Checkout report"};
+            for (int i = 0, menu_listLength = menu_list.length; i < menu_listLength; i++) {
+                String aMenu_list = menu_list[i];
+                menu.add(R.id.group_menu, i, Menu.NONE, aMenu_list).setIcon(R.drawable.ic_menu_camera);
             }
         }
-        menu.setGroupCheckable(R.id.group_menu, true, true);
+
+        /*
+        for ( String aMenu_list: menu_list) {
+            menu.add(R.id.group_menu, Menu.NONE, Menu.NONE, aMenu_list).setIcon(R.drawable.ic_menu_camera);
+        }*/
+        menu.setGroupCheckable(R.id.group_menu, false, true);
     }
 
     @Override
@@ -147,11 +124,11 @@ public class Container extends AppCompatActivity
                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface arg0, int arg1) {
-                            Intent startMain = new Intent(Intent.ACTION_MAIN);
-                            startMain.addCategory(Intent.CATEGORY_HOME);
-                            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(startMain);
-
+                            //Container.super.onBackPressed();
+                            Intent a = new Intent(Intent.ACTION_MAIN);
+                            a.addCategory(Intent.CATEGORY_HOME);
+                            a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(a);
                         }
                     }).create().show();
         }
@@ -175,51 +152,47 @@ public class Container extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         if (mPreviousMenuItem != null) {
-            mPreviousMenuItem.setChecked(false);
+                mPreviousMenuItem.setChecked(false);
             if (mPreviousMenuItem == item)
                 return true;
         }
         mPreviousMenuItem = item;
         Fragment fragment = null;
-        Class fragmentClass = null;
+        Class fragmentClass;
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         /** Add cases for student block
          *  0 = UserProfile  // Exists
-         *  1 = LocalGatepass // Exists
-         *  2 = OutStationRequest //Exists
-         *  3 = NonReturnableGatepass //Exists
-         *  4 = GatepassFragment  //Modify
-         *  5 = Visitor's Gatepass
-         *  6 = Visitor's Gatepass Status
+         *  1 = OutStationRequest
+         *  2 = NonReturnableGatepass
+         *  3 = GatepassFragment  //Exists
+         *  4 = Visitor's Gatepass
+         *  5 = Visitor's Gatepass Status
          */
         if (mUserType.equals("STUDENT")) {
             switch (id) {
-                case R.id.user_profile:
-                    fragment = new FragmentUserProfile();
-                    //fragmentClass = FragmentUserProfile.class;
+                case 0:
+                    fragmentClass = UserProfile.class;
                     break;
-                case R.id.local_gatepass:
-                    fragment = new FragmentLocalGatepass();
-                    //fragmentClass = FragmentLocalGatepass.class;
+                case 1:
+                    fragmentClass = OutStationGatepass.class;
                     break;
-                case R.id.out_stat:
-                    fragment = new FragmentOutStationGatepass();
-                    //fragmentClass = FragmentOutStationGatepass.class;
+                case 2:
+                    fragmentClass = NonReturnableGatepass.class;
                     break;
-                case R.id.non_ret:
-                    fragment = new FragmentNonReturnable();
-                    fragmentClass = FragmentNonReturnable.class;
+                case 3:
+                    fragmentClass = GatepassFragment.class;
+                    break;
+                default:
+                    fragmentClass = UserProfile.class;
                     break;
             }
         } else {
@@ -235,25 +208,20 @@ public class Container extends AppCompatActivity
              */
             switch (id) {
                 default:
-                    //Change when made
-                    fragmentClass = FragmentUserProfile.class;
+                    fragmentClass = UserProfile.class;
                     break;
             }
         }
 
-        /*try {
+        try {
             fragment = (Fragment) fragmentClass.newInstance();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        */
-        if(fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.contentFragment, fragment).commit();
-        }
-        else{
-            Log.e("NOT FOUND", "Error in fragment loading...");
-        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.contentFragment, fragment).commit();
+
         // Highlight the selected item, update the title, and close the drawer
         item.setChecked(true);
         setTitle(item.getTitle());
@@ -268,12 +236,32 @@ public class Container extends AppCompatActivity
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Override with your actions.
+     */
+
     @Override
     public void onGatepassListFragmentInteraction(DummyContent.DummyItem item) {
         Toast.makeText(this, item.toString(), Toast.LENGTH_SHORT).show();
     }
 
-    public void onFragmentInteraction(Uri uri) {
-        //Whatevs. Replace with your own fragment code.
+    @Override
+    public void UserProfileInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void LocalGatepassInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void NonReturnableInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void OutStationGatepassInteraction(Uri uri) {
+
     }
 }

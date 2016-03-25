@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remember_me">Remember Me</string>
+    <string name="nan">NaN</string>
+    <string name="nanemail">NaN@Nan.com</string>
+    <string name="profileimage">ProfileImage</string>
+</resources>
