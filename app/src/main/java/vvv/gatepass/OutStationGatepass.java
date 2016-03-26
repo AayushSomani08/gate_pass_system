@@ -1,12 +1,20 @@
 package vvv.gatepass;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.TimePicker;
+
+import java.util.Calendar;
 
 
 /**
@@ -28,6 +36,11 @@ public class OutStationGatepass extends Fragment {
     private String mParam2;
 
     private OutStationGatepassInteractionListener mListener;
+
+    AutoCompleteTextView purpose;
+    Context ctx;
+    TextView textViewName, desc;
+    public Button out_time, in_time, request;
 
     public OutStationGatepass() {
         // Required empty public constructor
@@ -61,11 +74,44 @@ public class OutStationGatepass extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.out_station_gatepass_fragment, container, false);
+        View view = inflater.inflate(R.layout.out_station_gatepass_fragment, container, false);
+
+        purpose = (AutoCompleteTextView) view.findViewById(R.id.purpose);
+        in_time = (Button) view.findViewById(R.id.in_time);
+        in_time.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
+                getTime(ctx, in_time);
+
+            }
+        });
+        out_time = (Button) view.findViewById(R.id.out_time);
+        request = (Button) view.findViewById(R.id.request);
+
+        return view;
     }
+
+    public void getTime(Context ctx, final Button button){
+
+        Calendar mcurrentTime = Calendar.getInstance();
+        int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+        int minute = mcurrentTime.get(Calendar.MINUTE);
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(ctx, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                button.setText( selectedHour + ":" + selectedMinute);
+            }
+        }, hour, minute, true);//Yes 24 hour time
+        mTimePicker.setTitle("Select Time");
+        mTimePicker.show();
+    }
+
+
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

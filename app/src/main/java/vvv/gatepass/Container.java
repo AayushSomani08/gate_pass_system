@@ -87,7 +87,7 @@ public class Container extends AppCompatActivity
         menu.clear();
         String [] menu_list;
         if (acc_type.equals("STUDENT")) {
-            menu_list = new String[] {  "User Profile", "Out Station Request", "Non returnable Gatepass",
+            menu_list = new String[] {  "User Profile", "Local Gatepass", "Out Station Request", "Non returnable Gatepass",
                                         "Check Gatepass Status", "Visitor's Gatepass", "Visitor's Gatepass Status"};
 
             for (int i = 0, menu_listLength = menu_list.length; i < menu_listLength; i++) {
@@ -171,6 +171,7 @@ public class Container extends AppCompatActivity
 
         /** Add cases for student block
          *  0 = UserProfile  // Exists
+         *  1 = Local Gatepass
          *  1 = OutStationRequest
          *  2 = NonReturnableGatepass
          *  3 = GatepassFragment  //Exists
@@ -183,12 +184,15 @@ public class Container extends AppCompatActivity
                     fragmentClass = UserProfile.class;
                     break;
                 case 1:
-                    fragmentClass = OutStationGatepass.class;
+                    fragmentClass = LocalGatepass.class;
                     break;
                 case 2:
-                    fragmentClass = NonReturnableGatepass.class;
+                    fragmentClass = OutStationGatepass.class;
                     break;
                 case 3:
+                    fragmentClass = NonReturnableGatepass.class;
+                    break;
+                case 4:
                     fragmentClass = GatepassFragment.class;
                     break;
                 default:
@@ -224,7 +228,7 @@ public class Container extends AppCompatActivity
 
         // Highlight the selected item, update the title, and close the drawer
         item.setChecked(true);
-        setTitle(item.getTitle());
+        setTitle("GatePass System");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
