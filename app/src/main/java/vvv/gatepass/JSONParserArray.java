@@ -19,22 +19,20 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 
 /**
- * Created by Pradumn K Mahanta on 04-03-2016.
+ * Created by Pradumn K Mahanta on 27-03-2016.
  */
-
-public class JSONParser {
+public class JSONParserArray {
 
     String charset = "UTF-8";
     HttpURLConnection conn;
     DataOutputStream wr;
     StringBuilder result;
     URL urlObj;
-    JSONObject jObj = null;
     JSONArray jAry = null;
     StringBuilder sbParams;
     String paramsString;
 
-    public JSONObject makeHttpRequest(String url, String method, HashMap<String, String> params) {
+    public JSONArray makeHttpRequest(String url, String method, HashMap<String, String> params) {
 
         sbParams = new StringBuilder();
         int i = 0;
@@ -105,11 +103,12 @@ public class JSONParser {
         conn.disconnect();
 
         try {
-            jObj = new JSONObject(result.toString());
+            jAry = new JSONArray(result.toString());
         } catch (JSONException e) {
             Log.e("JSON Parser", "Error parsing data " + e.toString());
         }
 
-        return jObj;
+        return jAry;
     }
+
 }
