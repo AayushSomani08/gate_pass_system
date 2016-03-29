@@ -1,7 +1,10 @@
 package vvv.gatepass;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,12 +12,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.Toast;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import vvv.gatepass.dummy.DummyContent;
-import vvv.gatepass.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.
@@ -26,8 +32,10 @@ public class GatepassFragment extends Fragment {
 
     private OnGatepassListFragmentInteractionListener mListener;
     private SwipeRefreshLayout swipeContainer;
-
-
+    private List<GatepassListViewItem> mItems;
+    String rUserName;
+    View view;
+    GetRequests getRequests;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -44,7 +52,13 @@ public class GatepassFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         setRetainInstance(true);
-        View view = inflater.inflate(R.layout.fragment_gatepass_list, container, false);
+        AppData.LoggedInUser = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        rUserName = AppData.LoggedInUser.getString("rUserName", "");
+
+        Toast.makeText(getActivity(),"UserName : " + rUserName, Toast.LENGTH_SHORT);
+
+        getRequests = new GetRequests();
+        view = inflater.inflate(R.layout.fragment_gatepass_list, container, false);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -69,12 +83,16 @@ public class GatepassFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        mItems = new ArrayList<GatepassListViewItem>();
+
+        getRequests.execute(rUserName);
+
         // Set the adapter
         if (view.findViewById(R.id.list) instanceof RecyclerView) {
             Context context = view.findViewById(R.id.list).getContext();
             final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            recyclerView.setAdapter(new MyGatepassRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyGatepassRecyclerViewAdapter(mItems, mListener));
         }
         return view;
     }
@@ -109,6 +127,90 @@ public class GatepassFragment extends Fragment {
      */
     public interface OnGatepassListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onGatepassListFragmentInteraction(DummyItem item);
+        void onGatepassListFragmentInteraction(GatepassListViewItem item);
     }
+
+    class GetRequests extends AsyncTask<String, String, JSONObject> {
+
+        JSONParser jsonParser = new JSONParser();
+        ProgressDialog pDialog;
+
+        @Override
+        protected void onPreExecute() {
+            pDialog = new ProgressDialog(getActivity());
+            pDialog.setMessage("Fetching your data...");
+            pDialog.setIndeterminate(true);
+            pDialog.setMessage("Please wait...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(true);
+            pDialog.show();
+
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... args) {
+            try {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("user_name", args[0]);
+                JSONObject json = jsonParser.makeHttpRequest(AppData.ULRGetRequests, "GET", params);
+                if (json != null) {
+                    return json;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(JSONObject jsonOb) {
+            String rStudentName, rUserName, rRequestStatus, rRequestTo,
+                    rEnrollmentNo, rOutDate, rOutTime, rInDate, rInTime,
+                    rRequestTime, rApprovedTime, rVisitPlace, rVisitType,
+                    rContactNo, rGatepassNumber;
+
+            if (pDialog != null && pDialog.isShowing()) {
+                pDialog.setMessage("Done.");
+                pDialog.dismiss();
+            }
+
+            try {
+
+                JSONArray jsonAr = jsonOb.getJSONArray("gatepass_request");
+
+                for (int i=0; i<jsonAr.length(); i++) {
+                    JSONObject json = jsonAr.getJSONObject(i);
+                    rGatepassNumber = json.getString("gatepass_number");
+                    rStudentName = json.getString("student_name");
+                    rUserName = json.getString("user_name");
+                    rRequestStatus = json.getString("request_status");
+                    rRequestTo = json.getString("request_to");
+                    rEnrollmentNo = json.getString("enrollment_no");
+                    rOutDate = json.getString("out_date");
+                    rOutTime = json.getString("out_time");
+                    rInDate = json.getString("in_date");
+                    rInTime = json.getString("in_time");
+                    rRequestTime = json.getString("request_time");
+                    rApprovedTime = json.getString("approved_time");
+                    rVisitPlace = json.getString("visit_place");
+                    rVisitType = json.getString("visit_type");
+                    rContactNo = json.getString("contact_number");
+                    mItems.add(new GatepassListViewItem(rGatepassNumber, rRequestStatus, rInTime, rOutTime));
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
+
+            if (view.findViewById(R.id.list) instanceof RecyclerView) {
+                Context context = view.findViewById(R.id.list).getContext();
+                final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.list);
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                recyclerView.setAdapter(new MyGatepassRecyclerViewAdapter(mItems, mListener));
+            }
+
+        }
+    }
+
 }

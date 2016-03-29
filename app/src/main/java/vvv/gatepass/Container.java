@@ -5,9 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -15,55 +14,61 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import vvv.gatepass.dummy.DummyContent;
-
 public class Container extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GatepassFragment.OnGatepassListFragmentInteractionListener, UserProfile.UserProfileInteractionListener, NonReturnableGatepass.NonReturnableInteractionListener, LocalGatepass.LocalGatepassInteractionListener, OutStationGatepass.OutStationGatepassInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GatepassFragment.OnGatepassListFragmentInteractionListener,
+        UserProfile.UserProfileInteractionListener, NonReturnableGatepass.NonReturnableInteractionListener,
+        LocalGatepass.LocalGatepassInteractionListener, OutStationGatepass.OutStationGatepassInteractionListener {
 
     MenuItem mPreviousMenuItem;
-    String mUserType;
+    String mUserType, mUserName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_page);
-        String acc_type;
+        String acc_type, acc_name;
 
-        if (savedInstanceState == null) {
+
+        if (savedInstanceState != null)
+        {
+            AppData.LoggedInUser = PreferenceManager.getDefaultSharedPreferences(this);
+            acc_type = AppData.LoggedInUser.getString("rUserType", "");
+            acc_name = AppData.LoggedInUser.getString("rFullName", "");
+            Log.d("Bundle : ", "Restored.");
+            mUserType = acc_type;
+            mUserName = acc_name;
+        }
+        else
+        {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
-                acc_type = "ERROR";
+                AppData.LoggedInUser = PreferenceManager.getDefaultSharedPreferences(this);
+                acc_type = AppData.LoggedInUser.getString("rUserType", "");
+                acc_name = AppData.LoggedInUser.getString("rFullName", "");
+                Log.d("Bundle : ", "Restored.");
+                mUserType = acc_type;
+                mUserName = acc_name;
             }
             else {
                 acc_type = extras.getString("ACC_TYPE");
+                acc_name = extras.getString("ACC_HOLDER");
                 mUserType = acc_type;
+                mUserName = acc_name;
             }
             UserProfile mStartFragment = new UserProfile();
-//          firstFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.contentFragment, mStartFragment).commit();
-        }
-        else {
-            acc_type = getIntent().getExtras().getString("ACC_TYPE");
+            getSupportFragmentManager().beginTransaction().add(R.id.contentFragment, mStartFragment).commit();
+            Log.d("Bundle : ", "Did not restore anything.");
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -76,9 +81,9 @@ public class Container extends AppCompatActivity
 
         View nav_header = navigationView.inflateHeaderView(R.layout.nav_header_user_page);
         TextView name = (TextView) nav_header.findViewById(R.id.textViewName);
-        name.setText("Name");
+        name.setText(mUserName);
         TextView email = (TextView) nav_header.findViewById(R.id.textViewEmail);
-        email.setText("Email");
+        email.setText(mUserType);
     }
 
     private void expandNavigationView(String acc_type) {
@@ -164,20 +169,21 @@ public class Container extends AppCompatActivity
         }
         mPreviousMenuItem = item;
         Fragment fragment = null;
-        Class fragmentClass;
+        Class fragmentClass = null;
 
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         /** Add cases for student block
          *  0 = UserProfile  // Exists
-         *  1 = Local Gatepass
-         *  1 = OutStationRequest
-         *  2 = NonReturnableGatepass
-         *  3 = GatepassFragment  //Exists
-         *  4 = Visitor's Gatepass
-         *  5 = Visitor's Gatepass Status
+         *  1 = Local Gatepass // DONE
+         *  2 = OutStationRequest //DONE
+         *  3 = NonReturnableGatepass //TO BE DONE
+         *  4 = GatepassFragment  //Exists
+         *  5 = Visitor's Gatepass
+         *  6 = Visitor's Gatepass Status
          */
+
         if (mUserType.equals("STUDENT")) {
             switch (id) {
                 case 0:
@@ -194,6 +200,12 @@ public class Container extends AppCompatActivity
                     break;
                 case 4:
                     fragmentClass = GatepassFragment.class;
+                    break;
+                case 5:
+                    fragmentClass = NonReturnableGatepass.class;
+                    break;
+                case 6:
+                    fragmentClass = NonReturnableGatepass.class;
                     break;
                 default:
                     fragmentClass = UserProfile.class;
@@ -244,10 +256,6 @@ public class Container extends AppCompatActivity
      * Override with your actions.
      */
 
-    @Override
-    public void onGatepassListFragmentInteraction(DummyContent.DummyItem item) {
-        Toast.makeText(this, item.toString(), Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void UserProfileInteraction(Uri uri) {
@@ -267,5 +275,10 @@ public class Container extends AppCompatActivity
     @Override
     public void OutStationGatepassInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onGatepassListFragmentInteraction(GatepassListViewItem item) {
+        Toast.makeText(this, item.toString(), Toast.LENGTH_SHORT).show();
     }
 }

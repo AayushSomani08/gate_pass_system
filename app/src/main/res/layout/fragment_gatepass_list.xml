@@ -12,7 +12,5 @@
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         tools:context="vvv.gatepass.GatepassFragment"
-        tools:listitem="@layout/fragment_gatepass" />
-    <!--android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp" -->
+        tools:listitem="@layout/gatepass_item_list" />
 </android.support.v4.widget.SwipeRefreshLayout>

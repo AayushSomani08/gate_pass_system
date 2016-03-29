@@ -8,14 +8,17 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -56,7 +59,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-    public String rPass, rUserType, rUserName, rEnrollKey, rFirstName, rBranch, rJoinDate, rHostel, rRoom, rContact, rEmail, rAddress;
+    public String rPass, rUserType, rUserName, rEnrollKey, rFullName, rBranch, rJoinDate, rHostel, rRoom, rContact, rEmail, rAddress;
     public String mPassword;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -66,6 +69,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mLoginFormView;
+    public TextView desc,textViewName;
+    public String fontpath = "fonts/ROCK.TTF";
     private Intent user_page_intent;
     private SessionManager mSession;
 
@@ -78,6 +83,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         populateAutoComplete();
         mPasswordView = (EditText) findViewById(R.id.password);
 
+        textViewName = (TextView) findViewById(R.id.textViewName);
+        desc = (TextView) findViewById(R.id.desc);
+
         mSession = new SessionManager(getApplicationContext());
         if (mSession.isLoggedIn()) {
             Intent intent = new Intent(this, Container.class);
@@ -85,15 +93,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             finish();
         }
 
-        /* Removed till Remember is implemented.
-        if (savedInstanceState == null) {
-            SharedPreferences prefs = getSharedPreferences("MY_PREFS_NAME", MODE_PRIVATE);
-            String restoredEmail = prefs.getString("Email", "");
-            String restoredPassword = prefs.getString("Password", "");
+        if (savedInstanceState != null) {
+            AppData.LoginDetails = getSharedPreferences("MY_PREFS_NAME", MODE_PRIVATE);
+            String restoredEmail = AppData.LoginDetails.getString("rUserName", "");
+            String restoredPassword = AppData.LoginDetails.getString("rPass", "");
             mEmailView.setText(restoredEmail);
             mPasswordView.setText(restoredPassword);
         }
-        */
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -366,7 +373,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     rPass = json.getString("u_password");
                     rUserName = json.getString("u_name");
                     rEnrollKey = json.getString("u_enroll");
-                    rFirstName = json.getString("u_fname");
+                    rFullName = json.getString("u_fname");
                     rBranch = json.getString("u_course");
                     rJoinDate = json.getString("u_joining");
                     rHostel = json.getString("u_hostel");
@@ -381,10 +388,33 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
 
             if (Objects.equals(rPass, mPassword)) {
+                AppData.LoginDetails = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+                SharedPreferences.Editor editor = AppData.LoginDetails.edit();
+                editor.putString("ACC_NAME", rUserName);
+                editor.putString("ACC_PASS", rPass);
+                editor.apply();
+
+                AppData.LoggedInUser = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this);
+                SharedPreferences.Editor editor2 = AppData.LoginDetails.edit();
+                editor2.putString("rUserType", rUserType);
+                editor2.putString("rPass", rPass);
+                editor2.putString("rUserName", rUserName);
+                editor2.putString("rEnrollKey", rEnrollKey);
+                editor2.putString("rFullName", rFullName);
+                editor2.putString("rBranch", rBranch);
+                editor2.putString("rJoinDate", rJoinDate);
+                editor2.putString("rHostel", rHostel);
+                editor2.putString("rRoom", rRoom);
+                editor2.putString("rContact", rContact);
+                editor2.putString("rEmail", rEmail);
+                editor2.putString("rAddress", rAddress);
+                editor2.apply();;
 
                 Toast.makeText(LoginActivity.this, "Authenticated", Toast.LENGTH_LONG).show();
                 user_page_intent.putExtra("ACC_TYPE", rUserType);
                 user_page_intent.putExtra("ACC_NAME", rUserName);
+
+
                 mSession.setLogin(true);
                 startActivity(user_page_intent);
                 finish();

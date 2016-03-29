@@ -1,0 +1,133 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gatepass_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginLeft="5dp"
+    android:descendantFocusability="beforeDescendants">
+
+    <AbsoluteLayout android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:background="@color/frame_background"
+        android:layout_gravity="right|bottom">
+
+        <ImageView android:id="@+id/ivIcon"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/user_default"
+            android:scaleType="fitXY"
+            android:layout_alignParentLeft="true" />
+
+        <RelativeLayout android:layout_width="272dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/ivIcon"
+            android:layout_x="37dp"
+            android:layout_y="2dp">
+
+            <LinearLayout android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/Row1"
+                android:layout_centerVertical="true" >
+
+                <TextView
+                    android:id="@+id/setGP"
+                    android:layout_width="wrap_content"
+                    android:text="Gate Pass Number: "
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Medium" />
+
+                <TextView
+                    android:id="@+id/Status"
+                    android:layout_width="match_parent"
+                    android:text="Status : "
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:layout_gravity="bottom" />
+
+                <TextView android:id="@+id/setStatus"
+                    android:layout_width="73dp"
+                    android:layout_height="wrap_content"
+                    android:text="Status"
+                    android:textAppearance="@android:style/TextAppearance.Small" />
+
+                <TextView
+                    android:id="@+id/GP"
+                    android:gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:text="Number"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Medium" />
+
+            </LinearLayout>
+
+
+            <LinearLayout android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/Row2"
+                android:layout_marginTop="60dp"
+                android:layout_centerVertical="true" >
+
+                <LinearLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingRight="10dp"
+                    android:id="@+id/out_time">
+
+                    <TextView
+                        android:textColor="#FFFFFF"
+                        android:id="@+id/outTimeI"
+                        android:layout_width="wrap_content"
+                        android:text="OUT TIME : "
+                        android:gravity="right"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@android:style/TextAppearance.Small" />
+
+                    <TextView android:id="@+id/outTIme"
+                        android:textColor="#FFFFFF"
+                        android:gravity="end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OUT"
+                        android:textAppearance="@android:style/TextAppearance.Small" />
+
+                </LinearLayout>
+
+
+                <LinearLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/in_time_lay"
+                    android:gravity="end">
+
+                    <TextView
+                        android:textColor="#FFFFFF"
+                        android:id="@+id/inTimeI"
+                        android:layout_width="wrap_content"
+                        android:text="IN TIME : "
+                        android:gravity="end"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@android:style/TextAppearance.Small" />
+
+                    <TextView android:id="@+id/inTime"
+                        android:layout_toRightOf="@id/inTimeI"
+                        android:textColor="#FFFFFF"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="IN"
+                        android:gravity="end"
+                        android:textAppearance="@android:style/TextAppearance.Small" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+
+    </AbsoluteLayout>
+
+</FrameLayout>

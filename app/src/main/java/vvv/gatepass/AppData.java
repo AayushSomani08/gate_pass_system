@@ -1,6 +1,8 @@
 package vvv.gatepass;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 /**
  * Created by Pradumn K Mahanta on 10-03-2016.

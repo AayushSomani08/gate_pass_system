@@ -5,6 +5,7 @@ package vvv.gatepass;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class SessionManager {
@@ -24,6 +25,10 @@ public class SessionManager {
     }
 
     public void setLogin(boolean isLoggedIn) {
+        AppData.LoginDetails = PreferenceManager.getDefaultSharedPreferences(_context);
+        SharedPreferences.Editor editor2 = AppData.LoginDetails.edit();
+        editor2.putBoolean("STATUS", isLoggedIn);
+        editor2.commit();
 
         editor.putBoolean(KEY_IS_LOGGEDIN, isLoggedIn);
         editor.commit();

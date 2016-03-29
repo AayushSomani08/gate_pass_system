@@ -7,8 +7,9 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,13 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Objects;
 
 
 /**
@@ -51,6 +53,10 @@ public class LocalGatepass extends Fragment{
     AddRequest addrequest;
     String StudentName = "Dummy Student";
     View view;
+    public String fontpath = "fonts/ROCK.TTF";
+    public TextView desc,textViewName;
+
+    public String rUserName, rEnrollKey, rFullName, rBranch, rRoom, rContact, rDestination, rPurpose;
 
 
 
@@ -88,21 +94,30 @@ public class LocalGatepass extends Fragment{
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.local_gatepass_fragment, container, false);
+
+        AppData.LoggedInUser = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        rUserName = AppData.LoggedInUser.getString("rUserName", "");
+        rEnrollKey = AppData.LoggedInUser.getString("rEnrollKey", "");
+        rFullName = AppData.LoggedInUser.getString("rFullName", "");
+        rBranch = AppData.LoggedInUser.getString("rBranch", "");
+        rRoom = AppData.LoggedInUser.getString("rRoom", "");
+        rContact = AppData.LoggedInUser.getString("rContact", "");
+        Log.d("Bundle : ", "Restored.");
+
+        textViewName = (TextView) view.findViewById(R.id.textViewName);
+        desc = (TextView) view.findViewById(R.id.desc);
+        Typeface face = Typeface.createFromAsset(getActivity().getAssets(), fontpath);
+        desc.setTypeface(face);
+        textViewName.setTypeface(face);
 
 
         purpose = (AutoCompleteTextView) view.findViewById(R.id.purpose);
         in_time = (Button) view.findViewById(R.id.in_time);
-        in_time.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                in_time.setText("21:00");
-                in_time_sel = "21:00";
-            }
-        });
+        in_time.setText("21:00");
+        in_time_sel = "21:00";
 
         out_time = (Button) view.findViewById(R.id.out_time);
         out_time.setOnClickListener(new View.OnClickListener(){
@@ -115,8 +130,8 @@ public class LocalGatepass extends Fragment{
                 mTimePicker = new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        out_time.setText(selectedHour + " : " + selectedMinute);
-                        out_time_sel = selectedHour + " : " + selectedMinute;
+                        out_time.setText(selectedHour + ":" + selectedMinute);
+                        out_time_sel = selectedHour + ":" + selectedMinute;
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select OUT TIME: ");
@@ -128,8 +143,10 @@ public class LocalGatepass extends Fragment{
         request.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                rPurpose = purpose.getText().toString();
                 addrequest = new AddRequest(getActivity());
-                addrequest.execute(StudentName);
+                addrequest.execute(out_time_sel, rPurpose);
             }
         });
 
@@ -200,16 +217,21 @@ public class LocalGatepass extends Fragment{
         protected JSONObject doInBackground(String... args) {
             try {
                 HashMap<String, String> params = new HashMap<>();
-                params.put("student_name", args[0]);
+                params.put("student_name", rFullName);
+                params.put("user_name", rUserName);
+                params.put("purpose", args[1]);
                 params.put("request_status", "Pending");
-                params.put("request_to", "dummy.warden"); // TODO:Change to spinner with a list of wardens for input selection.
-                params.put("enrollment_no", "Not Required"); // TODO:Get from the saved preferences
+                params.put("request_to", "dummy.warden");
+                params.put("enrollment_no", rEnrollKey);
+
 
                 Calendar mDate = Calendar.getInstance();
                 int mtodaysDate = mDate.get(Calendar.DAY_OF_MONTH);
-                params.put("out_date", String.valueOf(mtodaysDate));
-                params.put("out_time", out_time_sel);
-                params.put("in_date", String.valueOf(mtodaysDate));
+                int mMonth = mDate.get(Calendar.MONTH);
+                int mYear = mDate.get(Calendar.YEAR);
+                params.put("out_date", String.valueOf(mtodaysDate + "/" + mMonth + "/" + mYear));
+                params.put("out_time", args[0]);
+                params.put("in_date", String.valueOf(mtodaysDate + "/" + mMonth + "/" + mYear));
                 params.put("in_time", in_time_sel);
 
                 Calendar mcurrentTime = Calendar.getInstance();
@@ -220,7 +242,7 @@ public class LocalGatepass extends Fragment{
                 params.put("approved_time", "Not Required");
                 params.put("visit_place", "Local Areas");
                 params.put("visit_type", "Others");
-                params.put("contact_number", "Not Required"); //TODO:Get from saved preferences
+                params.put("contact_number", rContact);
 
                 JSONObject json = jsonParser.makeHttpRequest(AppData.ULRAddRequests, "GET", params);
                 if (json != null) {

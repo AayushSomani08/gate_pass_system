@@ -3,7 +3,6 @@
     android:id="@+id/out_stat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
     tools:context=".OutStationGatepass">
 
     <LinearLayout
@@ -14,42 +13,56 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textViewName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="OutStation"
-            android:textColor="#FFFFFF"
-            android:textSize="70sp"
-            android:textStyle="bold" />
-
-        <TextView
             android:id="@+id/desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="Gatepass"
-            android:textColor="#FFFFFF"
-            android:textSize="60sp"
-            android:layout_marginBottom="2dp" />
+            android:layout_gravity="center"
+            android:text="Gate Pass"
+            android:textSize="80sp" />
+
+        <TextView
+            android:id="@+id/textViewName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Out Station"
+            android:layout_marginBottom="15dp"
+            android:textSize="40sp" />
 
         <AutoCompleteTextView
             android:id="@+id/purpose"
             android:layout_width="fill_parent"
-            android:layout_height="45dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="5dp"
+            android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:background="@android:color/white"
+            android:layout_marginBottom="10dp"
             android:hint="Purpose of Visit"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"
-            android:singleLine="true"
-            />
+            android:inputType="textMultiLine"
+            android:lines="1"
+            android:minLines="1" />
+
+        <AutoCompleteTextView
+            android:id="@+id/destination"
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:hint="Destination"
+            android:inputType="textMultiLine"
+            android:lines="1"
+            android:minLines="1" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+
             android:weightSum="1"
             android:orientation="horizontal">
 
@@ -57,7 +70,7 @@
                 android:id="@+id/out_time"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="2.5dp"
+                android:layout_margin="5dp"
                 android:background="#2b72ad"
                 android:layout_weight=".5"
                 android:text="OUT TIME"
@@ -68,33 +81,60 @@
                 android:id="@+id/in_time"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="2.5dp"
+                android:layout_margin="5dp"
                 android:background="#2b72ad"
                 android:layout_weight=".5"
                 android:text="IN TIME"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"/>
 
+        </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:weightSum="1"
+            android:orientation="horizontal">
 
+            <Button
+                android:id="@+id/out_date"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="#2b72ad"
+                android:layout_weight=".5"
+                android:text="OUT DATE"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"/>
 
-
-
-
+            <Button
+                android:id="@+id/in_date"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:background="#2b72ad"
+                android:layout_weight=".5"
+                android:text="IN DATE"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"/>
 
         </LinearLayout>
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/request"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="#2b72ad"
+            android:text="Submit"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"/>
 
-    <Button
-        android:id="@+id/request"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginTop="5dp"
-        android:background="#2b72ad"
-        android:text="@string/action_sign_in"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"/>
+    </LinearLayout>
 
 </FrameLayout>

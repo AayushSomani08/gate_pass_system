@@ -1,12 +1,17 @@
 package vvv.gatepass;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 
 /**
@@ -27,11 +32,64 @@ public class UserProfile extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    public String rPass, rUserType, rUserName, rEnrollKey, rFullName, rBranch, rJoinDate, rHostel, rRoom, rContact, rEmail, rAddress;
+
+    TextView fNameII, UserNameII, EnrollmentII, BranchII, NumberII, RoomII;
+    Button LogOut, OCGP;
+
     private UserProfileInteractionListener mListener;
 
     public UserProfile() {
         // Required empty public constructor
     }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view =  inflater.inflate(R.layout.user_profile_fragment, container, false);
+
+        AppData.LoggedInUser = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        rUserName = AppData.LoggedInUser.getString("rUserName", "");
+        rEnrollKey = AppData.LoggedInUser.getString("rEnrollKey", "");
+        rFullName = AppData.LoggedInUser.getString("rFullName", "");
+        rBranch = AppData.LoggedInUser.getString("rBranch", "");
+        rRoom = AppData.LoggedInUser.getString("rRoom", "");
+        rContact = AppData.LoggedInUser.getString("rContact", "");
+        Log.d("Bundle : ", "Restored.");
+
+        fNameII = (TextView) view.findViewById(R.id.fNameII);
+        fNameII.setText(rFullName);
+        UserNameII = (TextView) view.findViewById(R.id.UserNameII);
+        UserNameII.setText(rUserName);
+        EnrollmentII = (TextView) view.findViewById(R.id.EnrollmentII);
+        EnrollmentII.setText(rEnrollKey);
+        BranchII = (TextView) view.findViewById(R.id.BranchII);
+        BranchII.setText(rBranch);
+        NumberII = (TextView) view.findViewById(R.id.NumberII);
+        NumberII.setText(rContact);
+        RoomII = (TextView) view.findViewById(R.id.RoomII);
+        RoomII.setText(rRoom);
+
+        LogOut = (Button) view.findViewById(R.id.LogOut);
+        LogOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Press","Button Pressed LOG OUT");
+            }
+        });
+
+        OCGP = (Button) view.findViewById(R.id.OCGP);
+        OCGP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Press", "Button Pressed OCGP");
+
+            }
+        });
+        return view;
+    }
+
+
 
     /**
      * Use this factory method to create a new instance of
@@ -60,12 +118,6 @@ public class UserProfile extends Fragment {
         }
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.user_profile_fragment, container, false);
-    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -105,4 +157,5 @@ public class UserProfile extends Fragment {
         // TODO: Update argument type and name
         void UserProfileInteraction(Uri uri);
     }
+    
 }
