@@ -1,6 +1,8 @@
 package vvv.gatepass;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -24,10 +26,12 @@ import android.widget.Toast;
 public class Container extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, GatepassFragment.OnGatepassListFragmentInteractionListener,
         UserProfile.UserProfileInteractionListener, NonReturnableGatepass.NonReturnableInteractionListener,
-        LocalGatepass.LocalGatepassInteractionListener, OutStationGatepass.OutStationGatepassInteractionListener {
+        LocalGatepass.LocalGatepassInteractionListener, OutStationGatepass.OutStationGatepassInteractionListener,
+        WARDENGatepassFragment.OnWARDENGatepassListFragmentInteractionListener{
 
     MenuItem mPreviousMenuItem;
     String mUserType, mUserName;
+    AppData isLoggedInUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,12 @@ public class Container extends AppCompatActivity
         setContentView(R.layout.activity_user_page);
         String acc_type, acc_name;
 
+        isLoggedInUser = new AppData(getApplicationContext());
+        if(!isLoggedInUser.isLoggedIn()){
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         if (savedInstanceState != null)
         {
@@ -223,6 +233,9 @@ public class Container extends AppCompatActivity
              *  Replace default with appropriate option
              */
             switch (id) {
+                case 0:
+                    fragmentClass = WARDENGatepassFragment.class;
+                    break;
                 default:
                     fragmentClass = UserProfile.class;
                     break;
@@ -278,7 +291,16 @@ public class Container extends AppCompatActivity
     }
 
     @Override
-    public void onGatepassListFragmentInteraction(GatepassListViewItem item) {
-        Toast.makeText(this, item.toString(), Toast.LENGTH_SHORT).show();
+    public void onGatepassListFragmentInteraction(Context mContext, GatepassListViewItem item) {
+        CustomDialog customDialog = new CustomDialog(mContext, item);
+        customDialog.show();
+        Log.d("Custom Dialog", "Opened");
+    }
+
+    @Override
+    public void onWARDENGatepassListFragmentInteraction(Context mContext, GatepassListViewItem item) {
+        CustomDialog customDialog = new CustomDialog(mContext, item);
+        customDialog.show();
+        Log.d("Custom Dialog","Opened");
     }
 }

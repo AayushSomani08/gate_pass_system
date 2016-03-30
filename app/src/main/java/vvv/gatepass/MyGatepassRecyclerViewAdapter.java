@@ -33,16 +33,16 @@ public class MyGatepassRecyclerViewAdapter extends RecyclerView.Adapter<MyGatepa
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.GP.setText(holder.mItem.gp_Number);
-        holder.setStatus.setText(holder.mItem.gp_Status);
-        holder.inTime.setText(holder.mItem.gp_inTime);
-        holder.outTime.setText(holder.mItem.gp_outTime);
+        holder.GP.setText(holder.mItem.gp_GatepassNumber);
+        holder.setStatus.setText(holder.mItem.gp_RequestStatus);
+        holder.inTime.setText(holder.mItem.gp_InTime);
+        holder.outTime.setText(holder.mItem.gp_OutTime);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != mListener) {
-                    mListener.onGatepassListFragmentInteraction(holder.mItem);
+                    mListener.onGatepassListFragmentInteraction(v.getContext(),holder.mItem);
                 }
             }
         });

@@ -55,7 +55,7 @@ public class GatepassFragment extends Fragment {
         AppData.LoggedInUser = PreferenceManager.getDefaultSharedPreferences(getActivity());
         rUserName = AppData.LoggedInUser.getString("rUserName", "");
 
-        Toast.makeText(getActivity(),"UserName : " + rUserName, Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(),"UserName : " + rUserName, Toast.LENGTH_SHORT).show();
 
         getRequests = new GetRequests();
         view = inflater.inflate(R.layout.fragment_gatepass_list, container, false);
@@ -127,7 +127,7 @@ public class GatepassFragment extends Fragment {
      */
     public interface OnGatepassListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onGatepassListFragmentInteraction(GatepassListViewItem item);
+        void onGatepassListFragmentInteraction(Context mContext, GatepassListViewItem item);
     }
 
     class GetRequests extends AsyncTask<String, String, JSONObject> {
@@ -166,7 +166,7 @@ public class GatepassFragment extends Fragment {
             String rStudentName, rUserName, rRequestStatus, rRequestTo,
                     rEnrollmentNo, rOutDate, rOutTime, rInDate, rInTime,
                     rRequestTime, rApprovedTime, rVisitPlace, rVisitType,
-                    rContactNo, rGatepassNumber;
+                    rContactNo, rGatepassNumber, rPurpose, rReason;
 
             if (pDialog != null && pDialog.isShowing()) {
                 pDialog.setMessage("Done.");
@@ -182,6 +182,7 @@ public class GatepassFragment extends Fragment {
                     rGatepassNumber = json.getString("gatepass_number");
                     rStudentName = json.getString("student_name");
                     rUserName = json.getString("user_name");
+                    rPurpose = json.getString("purpose");
                     rRequestStatus = json.getString("request_status");
                     rRequestTo = json.getString("request_to");
                     rEnrollmentNo = json.getString("enrollment_no");
@@ -193,8 +194,10 @@ public class GatepassFragment extends Fragment {
                     rApprovedTime = json.getString("approved_time");
                     rVisitPlace = json.getString("visit_place");
                     rVisitType = json.getString("visit_type");
+                    rReason = json.getString("reason");
                     rContactNo = json.getString("contact_number");
-                    mItems.add(new GatepassListViewItem(rGatepassNumber, rRequestStatus, rInTime, rOutTime));
+                    mItems.add(new GatepassListViewItem(rGatepassNumber, rStudentName, rUserName, rRequestStatus, rRequestTo,
+                            rEnrollmentNo, rOutDate, rOutTime, rInDate, rInTime, rVisitPlace, rVisitType, rContactNo, rPurpose, rReason));
                 }
 
             } catch (JSONException e) {

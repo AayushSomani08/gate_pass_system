@@ -22,6 +22,8 @@ import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -72,7 +74,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     public TextView desc,textViewName;
     public String fontpath = "fonts/ROCK.TTF";
     private Intent user_page_intent;
-    private SessionManager mSession;
+    private AppData mSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         textViewName = (TextView) findViewById(R.id.textViewName);
         desc = (TextView) findViewById(R.id.desc);
 
-        mSession = new SessionManager(getApplicationContext());
+        mSession = new AppData(getApplicationContext());
         if (mSession.isLoggedIn()) {
             Intent intent = new Intent(this, Container.class);
             startActivity(intent);
@@ -305,6 +307,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     }
 
+    @Override
+    public void onBackPressed() {
+        //Container.super.onBackPressed();
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+        finish();
+    }
+
+
+
     private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
         //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
         ArrayAdapter<String> adapter =
@@ -312,11 +327,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
         mEmailView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 
     private interface ProfileQuery {

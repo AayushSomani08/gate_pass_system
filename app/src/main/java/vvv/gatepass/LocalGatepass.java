@@ -238,7 +238,7 @@ public class LocalGatepass extends Fragment{
                 int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
                 int minute = mcurrentTime.get(Calendar.MINUTE);
                 int seconds = mcurrentTime.get(Calendar.SECOND);
-                params.put("request_time", String.valueOf(hour) + " : " + String.valueOf(minute) + " : " + String.valueOf(seconds));
+                params.put("request_time", String.valueOf(hour) + ":" + String.valueOf(minute) + ":" + String.valueOf(seconds));
                 params.put("approved_time", "Not Required");
                 params.put("visit_place", "Local Areas");
                 params.put("visit_type", "Others");

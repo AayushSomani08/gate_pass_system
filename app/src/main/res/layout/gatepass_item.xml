@@ -6,128 +6,119 @@
     android:layout_marginTop="5dp"
     android:layout_marginRight="5dp"
     android:layout_marginLeft="5dp"
+    android:background="@drawable/item_frame"
     android:descendantFocusability="beforeDescendants">
 
-    <AbsoluteLayout android:layout_width="fill_parent"
-        android:layout_height="80dp"
-        android:background="@color/frame_background"
-        android:layout_gravity="right|bottom">
+    <RelativeLayout android:layout_width="fill_parent"
+        android:layout_height="80dp">
 
         <ImageView android:id="@+id/ivIcon"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:padding="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:layout_centerVertical="true"
             android:src="@drawable/user_default"
             android:scaleType="fitXY"
             android:layout_alignParentLeft="true" />
 
-        <RelativeLayout android:layout_width="272dp"
+        <RelativeLayout android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/ivIcon"
-            android:layout_x="37dp"
-            android:layout_y="2dp">
+            android:layout_toRightOf="@id/ivIcon">
 
-            <LinearLayout android:layout_width="wrap_content"
+            <RelativeLayout android:layout_width="wrap_content"
+                android:layout_marginTop="10dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/Row1"
-                android:layout_centerVertical="true" >
+                android:id="@+id/rUserN">
 
                 <TextView
-                    android:id="@+id/setGP"
+                    android:id="@+id/UNII"
                     android:layout_width="wrap_content"
-                    android:text="Gate Pass Number: "
+                    android:text="User Name : "
                     android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Medium" />
+                    android:textSize="20dp" />
 
                 <TextView
-                    android:id="@+id/Status"
-                    android:layout_width="match_parent"
-                    android:text="Status : "
+                    android:layout_toRightOf="@+id/UNII"
+                    android:id="@+id/gp_FullName"
+                    android:layout_width="wrap_content"
+                    android:text="Name"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:layout_gravity="bottom" />
+                    android:textSize="20dp" />
 
-                <TextView android:id="@+id/setStatus"
-                    android:layout_width="73dp"
+            </RelativeLayout>
+
+            <RelativeLayout android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rGatepassNo"
+                android:layout_below="@id/rUserN">
+
+                <TextView
+                    android:id="@+id/NOII"
+                    android:layout_width="wrap_content"
+                    android:text="Gatepass Number : "
                     android:layout_height="wrap_content"
-                    android:text="Status"
                     android:textAppearance="@android:style/TextAppearance.Small" />
 
-                <TextView
-                    android:id="@+id/GP"
-                    android:gravity="center_horizontal"
+                <TextView android:id="@+id/gp_Number"
+                    android:layout_toRightOf="@+id/NOII"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Number"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.Medium" />
+                    android:textAppearance="@android:style/TextAppearance.Small" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
-
-            <LinearLayout android:layout_width="wrap_content"
+            <RelativeLayout android:layout_width="wrap_content"
+                android:layout_marginTop="3dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:id="@+id/Row2"
-                android:layout_marginTop="60dp"
-                android:layout_centerVertical="true" >
+                android:gravity="right"
+                android:layout_below="@+id/rGatepassNo"
+                android:id="@+id/out_time">
 
-                <LinearLayout android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/outTimeI"
+                    android:layout_width="wrap_content"
+                    android:text="OUT TIME : "
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingRight="10dp"
-                    android:id="@+id/out_time">
+                    android:textAppearance="@android:style/TextAppearance.Small" />
 
-                    <TextView
-                        android:textColor="#FFFFFF"
-                        android:id="@+id/outTimeI"
-                        android:layout_width="wrap_content"
-                        android:text="OUT TIME : "
-                        android:gravity="right"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@android:style/TextAppearance.Small" />
-
-                    <TextView android:id="@+id/outTIme"
-                        android:textColor="#FFFFFF"
-                        android:gravity="end"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="OUT"
-                        android:textAppearance="@android:style/TextAppearance.Small" />
-
-                </LinearLayout>
-
-
-                <LinearLayout android:layout_width="wrap_content"
+                <TextView android:id="@+id/outTIme"
+                    android:layout_toRightOf="@id/outTimeI"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/in_time_lay"
-                    android:gravity="end">
+                    android:text="OUT"
+                    android:textAppearance="@android:style/TextAppearance.Small" />
 
-                    <TextView
-                        android:textColor="#FFFFFF"
-                        android:id="@+id/inTimeI"
-                        android:layout_width="wrap_content"
-                        android:text="IN TIME : "
-                        android:gravity="end"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@android:style/TextAppearance.Small" />
+            </RelativeLayout>
 
-                    <TextView android:id="@+id/inTime"
-                        android:layout_toRightOf="@id/inTimeI"
-                        android:textColor="#FFFFFF"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="IN"
-                        android:gravity="end"
-                        android:textAppearance="@android:style/TextAppearance.Small" />
+            <RelativeLayout android:layout_width="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="3dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/rGatepassNo"
+                android:layout_toRightOf="@id/out_time">
 
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/inTimeI"
+                    android:layout_width="wrap_content"
+                    android:text="IN TIME : "
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Small" />
 
-            </LinearLayout>
+                <TextView android:id="@+id/inTime"
+                    android:layout_toRightOf="@id/inTimeI"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="IN"
+                    android:textAppearance="@android:style/TextAppearance.Small" />
+
+            </RelativeLayout>
+
 
         </RelativeLayout>
 
-    </AbsoluteLayout>
+    </RelativeLayout>
 
 </FrameLayout>
